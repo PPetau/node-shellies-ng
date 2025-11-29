@@ -1,6 +1,6 @@
 {
   "name": "@ppetau/shellies-ng",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Handles communication with the next generation of Shelly devices",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
