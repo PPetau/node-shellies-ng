@@ -77,12 +77,13 @@ export interface DeviceClass {
  * @param target - The prototype of the device class that the property belongs to.
  * @param propertyName - The name of the property.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const component = (target: any, propertyName: string) => {
-  // make sure the given prototype has an array of properties
-  if (!Object.prototype.hasOwnProperty.call(target, '_componentProps')) {
-    target._componentProps = new Array<string>();
+export const component: PropertyDecorator = (target, propertyName) => {
+  if (typeof propertyName !== 'string') {
+    throw new Error('The @component decorator can only be applied to string-named properties');
   }
+
+  // make sure the given prototype has an array of properties
+  ensureComponentProps(target);
 
   // get the array of properties
   const props: string[] = target._componentProps;
@@ -90,6 +91,20 @@ export const component = (target: any, propertyName: string) => {
   // add this property to the array
   props.push(propertyName);
 };
+
+function ensureComponentProps(target: unknown): asserts target is { _componentProps: string[] } {
+  if(typeof target !== 'object' || target === null) {
+    throw new Error('Target must be an object');
+  }
+  if (!hasComponentProps(target)) {
+    Object.assign(target, { _componentProps: [] });
+  }
+}
+
+
+function hasComponentProps(obj: unknown): obj is { _componentProps: string[] } {
+  return Object.prototype.hasOwnProperty.call(obj, '_componentProps');
+}
 
 /**
  * Base class for all devices.
